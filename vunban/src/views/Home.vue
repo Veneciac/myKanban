@@ -36,10 +36,10 @@
     </md-dialog>
 
     <div class="list-category card-expansion">
-      <list :col="'backlog'" :tasks="backLog" :status="'Back-Log'"/>
-      <list :col="'todo'" :tasks="todo" :status="'Todo'"/>
-      <list :col="'doing'" :tasks="doing" :status="'Doing'"/>
-      <list :col="'done'" :tasks="done" :status="'Done'"/>
+      <list :col="'backlog'" :tasks="backLog" :status="'Back-Log'" :num="1"/>
+      <list :col="'todo'" :tasks="todo" :status="'Todo'" :num="2"/>
+      <list :col="'doing'" :tasks="doing" :status="'Doing'" :num="3"/>
+      <list :col="'done'" :tasks="done" :status="'Done'" :num="4"/>
     </div>
   </div>
 </template>
@@ -66,7 +66,7 @@ export default {
       backLog: [],
       todo: [],
       doing: [],
-      done: [],
+      done: []
     }
   },
   methods: {
@@ -113,10 +113,14 @@ export default {
             }
           })
         })
-    }
+    },
+    updateBlock(id, status) {
+      this.blocks.find(b => b.id === Number(id)).status = status;
+    },
   },
   created () {
     this.fetch()
+    alertify.message('Drag and drop task to change status')
   }
 }
 </script>

@@ -14,9 +14,9 @@
         </md-card-content>
 
         <md-card-actions>
-          <md-button class="text-black" v-if="task.status > 1" @click.prevent="before">Before</md-button>
+          <md-button class="text-black" v-if="task.status > 1" @click.prevent="before">{{ beforeBtn }}</md-button>
           <md-button class="text-black" @click.prevent="deleteTask">Delete</md-button>
-          <md-button class="text-black" v-if="task.status < 4" @click.prevent="next">Next</md-button>
+          <md-button class="text-black" v-if="task.status < 4" @click.prevent="next">{{ nextBtn }}</md-button>
         </md-card-actions>
       </md-ripple>
     </md-card>
@@ -24,10 +24,17 @@
 
 <script>
 import db from '@/script/firebase.js'
+import alertify from 'alertifyjs'
 
 export default {
     name: 'taskCard',
     props: ['task'],
+    data () {
+        return {
+            nextBtn: '',
+            beforeBtn: ''
+        }
+    },
     methods: {
         next () {
              db.collection('tasks').doc(this.task.id).set({
@@ -38,7 +45,6 @@ export default {
                 status: this.task.status + 1
             })
             .then(function() {
-                console.log("Document successfully written!");
             })
             .catch(function(error) {
                 console.error("Error writing document: ", error);
@@ -53,7 +59,6 @@ export default {
                 status: this.task.status - 1
             })
             .then(function() {
-                console.log("Document successfully written!");
             })
             .catch(function(error) {
                 console.error("Error writing document: ", error);
@@ -62,11 +67,24 @@ export default {
         deleteTask () {
               db.collection("tasks").doc(this.task.id).delete()
                 .then(function() {
-                console.log('Deleted!')
+                    alertify.message('Success delete task')
                 })
                 .catch(function(error) {
-                    console.error("Error removing document: ", error);
+                    alertify.error("Error removing document: ", error);
                 });
+        }
+    },
+    created () {
+        if (this.task.status == 1) {
+            this.nextBtn = 'todo'
+        } else if (this.task.status == 2) {
+            this.nextBtn = 'doing'
+            this.beforeBtn = 'back log'
+        } else if (this.task.status == 3) {
+            this.nextBtn = 'done'
+            this.beforeBtn = 'todo'
+        } else {
+            this.beforeBtn = 'doing'
         }
     }
 }
